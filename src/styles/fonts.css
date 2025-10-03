@@ -1,0 +1,92 @@
+/* Importación de fuentes personalizadas */
+@font-face {
+  font-family: 'BN';
+  src: url('/assets/fonts/BN.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SpaceMono';
+  src: url('/assets/fonts/SpaceMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Minercraftory';
+  src: url('/assets/fonts/Minercraftory.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GameofThrones';
+  src: url('/assets/fonts/GameofThrones.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HouseBrokenClean';
+  src: url('/assets/fonts/HouseBrokenClean.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Variables CSS para el sistema de colores según el manual de estilos */
+:root {
+  /* Colores Primarios */
+  --brand-primary: #DF2892;
+  --brand-light: #FF5FA2;
+  --brand-gradient: #FF7EB3;
+  --brand-accent: #E91E63;
+  --brand-error: #FF1744;
+
+  /* Fondos */
+  --bg-primary: #181818;
+  --bg-secondary: #1a1a1a;
+  --bg-elevated: #222;
+  --bg-card: #2a2a2a;
+  --bg-interactive: #333;
+  --bg-gradient: #2d2d2d;
+  --bg-disabled: #666;
+
+  /* Texto */
+  --text-primary: #fff;
+  --text-secondary: #888;
+  --text-tertiary: #ccc;
+  --text-success: #4CAF50;
+  --text-warning: #FF6B35;
+  --text-special: #9C27B0;
+
+  /* Fuentes */
+  --font-primary: 'BN', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-logo: 'Minercraftory', 'BN', sans-serif;
+  --font-mono: 'SpaceMono', 'Courier New', monospace;
+  --font-special: 'GameofThrones', serif;
+
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  /* Elevaciones */
+  --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --elevation-2: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  --elevation-3: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.10);
+  --elevation-4: 0 15px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
+
+  /* Transiciones */
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 400ms ease-in-out;
+}
