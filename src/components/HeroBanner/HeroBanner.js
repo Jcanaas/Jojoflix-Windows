@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { heroBanners } from '../../data/contentData';
 import theme from '../../styles/theme';
 
 const BannerContainer = styled.section`
@@ -13,16 +14,24 @@ const BannerContainer = styled.section`
   border-radius: 0 0 20px 20px;
 `;
 
-const BannerImage = styled.img`
+const BannerSlide = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: ${theme.transitions.slow};
-  transform: scale(1.1);
-  
-  &.loaded {
-    transform: scale(1);
-  }
+  opacity: ${props => props.active ? 1 : 0};
+  transition: opacity 1.2s ease-in-out;
+`;
+
+const BannerImage = styled.div`
+  width: 100%;
+  height: 100%;
+  background-image: url(${props => props.image});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
 `;
 
 const BannerOverlay = styled.div`
@@ -33,227 +42,325 @@ const BannerOverlay = styled.div`
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.3) 50%,
-    rgba(223, 40, 146, 0.2) 100%
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(223, 40, 146, 0.15) 40%,
+    rgba(255, 95, 162, 0.1) 60%,
+    rgba(0, 0, 0, 0.9) 100%
   );
 `;
 
 const BannerContent = styled.div`
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: ${theme.spacing.xl} ${theme.spacing.md} ${theme.spacing.lg};
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
-  color: ${theme.colors.text.primary};
+  bottom: 80px;
+  left: 60px;
+  right: 60px;
+  z-index: 2;
+  color: white;
   
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    padding: ${theme.spacing.lg} ${theme.spacing.md};
+  @media (max-width: 768px) {
+    left: 30px;
+    right: 30px;
+    bottom: 60px;
+  }
+`;
+
+const BannerLogo = styled.img`
+  max-height: 120px;
+  max-width: 400px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
+  
+  @media (max-width: 768px) {
+    max-height: 80px;
+    max-width: 300px;
   }
 `;
 
 const BannerTitle = styled.h1`
-  font-size: clamp(28px, 5vw, 48px);
-  font-weight: bold;
-  margin: 0 0 ${theme.spacing.md} 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  background: ${theme.gradients.logo};
+  color: ${theme.colors.text.primary};
+  font-family: ${theme.fonts.primary};
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 900;
+  margin-bottom: 16px;
+  text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.9);
+  line-height: 1.1;
+  
+  background: ${theme.gradients.primary};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   
   @supports not (-webkit-background-clip: text) {
-    color: ${theme.colors.text.primary};
+    color: white;
   }
 `;
 
+const BannerSubtitle = styled.h2`
+  font-family: ${theme.fonts.secondary};
+  font-size: clamp(20px, 3.5vw, 28px);
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: ${theme.colors.accent};
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+`;
+
 const BannerDescription = styled.p`
-  font-size: 18px;
+  font-family: ${theme.fonts.secondary};
+  font-size: clamp(16px, 2.2vw, 20px);
   line-height: 1.6;
-  margin: 0 0 ${theme.spacing.lg} 0;
-  max-width: 600px;
-  color: ${theme.colors.text.primary};
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: 16px;
-  }
+  max-width: 700px;
+  margin-bottom: 32px;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.8);
 `;
 
 const BannerActions = styled.div`
   display: flex;
-  gap: ${theme.spacing.md};
+  gap: 20px;
   flex-wrap: wrap;
+  align-items: center;
 `;
 
-const PrimaryButton = styled.button`
-  background: ${theme.colors.brand.primary};
-  color: ${theme.colors.text.primary};
+const ActionButton = styled.button`
+  padding: 16px 32px;
   border: none;
-  padding: ${theme.spacing.md} ${theme.spacing.xl};
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 30px;
   font-family: ${theme.fonts.primary};
+  font-size: 18px;
+  font-weight: 700;
   cursor: pointer;
-  transition: ${theme.transitions.normal};
-  box-shadow: ${theme.elevation.low};
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  position: relative;
+  overflow: hidden;
   
-  &:hover {
-    background: ${theme.colors.brand.light};
-    transform: translateY(-2px);
-    box-shadow: ${theme.elevation.medium};
-  }
+  ${props => props.primary ? `
+    background: ${theme.gradients.primary};
+    color: white;
+    box-shadow: 0 12px 30px rgba(223, 40, 146, 0.4);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    &:hover {
+      transform: translateY(-4px) scale(1.06);
+      box-shadow: 0 16px 40px rgba(223, 40, 146, 0.5);
+      
+      &::before {
+        left: 100%;
+      }
+    }
+  ` : `
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+  `}
   
   &:active {
-    transform: translateY(0);
+    transform: translateY(-2px) scale(1.02);
   }
 `;
 
-const SecondaryButton = styled.button`
-  background: transparent;
-  color: ${theme.colors.text.primary};
-  border: 2px solid ${theme.colors.brand.primary};
-  padding: calc(${theme.spacing.md} - 2px) calc(${theme.spacing.xl} - 2px);
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  font-family: ${theme.fonts.primary};
-  cursor: pointer;
-  transition: ${theme.transitions.normal};
-  
-  &:hover {
-    background: ${theme.colors.brand.primary};
-    transform: translateY(-2px);
-    box-shadow: ${theme.elevation.medium};
-  }
-`;
-
-const BannerIndicators = styled.div`
+const IndicatorContainer = styled.div`
   position: absolute;
-  bottom: ${theme.spacing.md};
-  right: ${theme.spacing.md};
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: ${theme.spacing.sm};
+  gap: 16px;
+  z-index: 3;
 `;
 
 const Indicator = styled.button`
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   border: none;
-  background: ${props => props.active ? theme.colors.brand.primary : 'rgba(255, 255, 255, 0.4)'};
   cursor: pointer;
-  transition: ${theme.transitions.fast};
+  transition: all 0.4s ease;
+  position: relative;
+  
+  ${props => props.active ? `
+    background: ${theme.colors.primary};
+    box-shadow: 0 0 16px rgba(223, 40, 146, 0.8);
+    transform: scale(1.3);
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(223, 40, 146, 0.3);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+    }
+  ` : `
+    background: rgba(255, 255, 255, 0.5);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.8);
+      transform: scale(1.2);
+    }
+  `}
+`;
+
+const NavigationArrow = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(223, 40, 146, 0.8);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 4;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
-    background: ${theme.colors.brand.light};
-    transform: scale(1.2);
+    background: ${theme.colors.primary};
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 12px 30px rgba(223, 40, 146, 0.5);
+  }
+  
+  ${props => props.direction === 'left' ? 'left: 20px;' : 'right: 20px;'}
+  
+  @media (max-width: 768px) {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
   }
 `;
 
-function HeroBanner({ banners = [] }) {
+const HeroBanner = ({ onPlayContent, onExploreCategory }) => {
   const navigate = useNavigate();
-  const [currentBanner, setCurrentBanner] = useState(0);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Banners de ejemplo si no se proporcionan
-  const defaultBanners = [
-    {
-      id: 1,
-      title: "Bienvenido a JOJO-FLIX",
-      description: "Disfruta de miles de películas y series en alta calidad. Tu plataforma de streaming favorita ahora disponible en Windows.",
-      image: "/assets/images/bocchi_the_Rock_Banner.jpg",
-      action: "Explorar Catálogo"
-    },
-    {
-      id: 2,
-      title: "Últimos Estrenos",
-      description: "Descubre las películas y series más recientes. Contenido actualizado semanalmente para que nunca te quedes sin opciones.",
-      image: "/assets/images/beck_bg.jpg",
-      action: "Ver Estrenos"
-    },
-    {
-      id: 3,
-      title: "Series Populares",
-      description: "Las series más vistas por nuestra comunidad. Encuentra tu próxima obsesión televisiva aquí.",
-      image: "/assets/images/Berserkbanner.jpg",
-      action: "Ver Series"
-    }
-  ];
-
-  const displayBanners = banners.length > 0 ? banners : defaultBanners;
-  const current = displayBanners[currentBanner];
-
-  // Auto-rotate banners
   useEffect(() => {
-    if (displayBanners.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentBanner(prev => (prev + 1) % displayBanners.length);
-        setImageLoaded(false);
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [displayBanners.length]);
+    if (!isAutoPlaying) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
+    }, 6000);
 
-  const handleAction = () => {
-    if (current.action === "Explorar Catálogo") {
-      navigate("/movies");
-    } else if (current.action === "Ver Estrenos") {
-      navigate("/movies");
-    } else if (current.action === "Ver Series") {
-      navigate("/series");
-    }
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  const handleSlideChange = (index) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  const handleMoreInfo = () => {
-    navigate(`/player/${current.id}`);
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroBanners.length) % heroBanners.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const handlePrimaryAction = () => {
+    const currentBanner = heroBanners[currentSlide];
+    if (currentBanner.contentId && onPlayContent) {
+      onPlayContent(currentBanner.contentId);
+    } else if (onExploreCategory) {
+      onExploreCategory();
+    }
+    console.log('Primary action:', currentBanner.action);
+  };
+
+  const handleSecondaryAction = () => {
+    const currentBanner = heroBanners[currentSlide];
+    if (onExploreCategory) {
+      onExploreCategory();
+    }
+    console.log('Secondary action for:', currentBanner.title);
   };
 
   return (
     <BannerContainer>
-      <BannerImage 
-        src={current.image}
-        alt={current.title}
-        className={imageLoaded ? 'loaded' : ''}
-        onLoad={() => setImageLoaded(true)}
-        onError={(e) => {
-          e.target.src = "/assets/images/adaptive-icon.png";
-        }}
-      />
-      <BannerOverlay />
+      {heroBanners.map((banner, index) => (
+        <BannerSlide key={banner.id} active={index === currentSlide}>
+          <BannerImage image={banner.image}>
+            <BannerOverlay />
+            <BannerContent>
+              {banner.logo && (
+                <BannerLogo src={banner.logo} alt={banner.title} />
+              )}
+              <BannerTitle>{banner.title}</BannerTitle>
+              {banner.subtitle && (
+                <BannerSubtitle>{banner.subtitle}</BannerSubtitle>
+              )}
+              <BannerDescription>{banner.description}</BannerDescription>
+              <BannerActions>
+                <ActionButton primary onClick={handlePrimaryAction}>
+                  {banner.action}
+                </ActionButton>
+                <ActionButton onClick={handleSecondaryAction}>
+                  Más Info
+                </ActionButton>
+              </BannerActions>
+            </BannerContent>
+          </BannerImage>
+        </BannerSlide>
+      ))}
       
-      <BannerContent>
-        <BannerTitle>{current.title}</BannerTitle>
-        <BannerDescription>{current.description}</BannerDescription>
-        
-        <BannerActions>
-          <PrimaryButton onClick={handleAction}>
-            ▶ {current.action}
-          </PrimaryButton>
-          <SecondaryButton onClick={handleMoreInfo}>
-            ℹ Más información
-          </SecondaryButton>
-        </BannerActions>
-      </BannerContent>
-
-      {displayBanners.length > 1 && (
-        <BannerIndicators>
-          {displayBanners.map((_, index) => (
-            <Indicator
-              key={index}
-              active={index === currentBanner}
-              onClick={() => {
-                setCurrentBanner(index);
-                setImageLoaded(false);
-              }}
-            />
-          ))}
-        </BannerIndicators>
-      )}
+      <NavigationArrow direction="left" onClick={handlePrevSlide}>
+        ‹
+      </NavigationArrow>
+      
+      <NavigationArrow direction="right" onClick={handleNextSlide}>
+        ›
+      </NavigationArrow>
+      
+      <IndicatorContainer>
+        {heroBanners.map((_, index) => (
+          <Indicator
+            key={index}
+            active={index === currentSlide}
+            onClick={() => handleSlideChange(index)}
+          />
+        ))}
+      </IndicatorContainer>
     </BannerContainer>
   );
-}
+};
 
 export default HeroBanner;
