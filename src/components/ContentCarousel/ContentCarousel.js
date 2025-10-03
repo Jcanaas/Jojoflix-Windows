@@ -106,11 +106,11 @@ const ContentMeta = styled.p`
 function ContentCarousel({ title, items = [], onItemClick }) {
   // Datos de ejemplo si no se proporcionan items
   const defaultItems = [
-    { id: 1, title: "Contenido 1", image: "/assets/images/placeholder1.jpg", year: "2024" },
-    { id: 2, title: "Contenido 2", image: "/assets/images/placeholder2.jpg", year: "2024" },
-    { id: 3, title: "Contenido 3", image: "/assets/images/placeholder3.jpg", year: "2023" },
-    { id: 4, title: "Contenido 4", image: "/assets/images/placeholder4.jpg", year: "2023" },
-    { id: 5, title: "Contenido 5", image: "/assets/images/placeholder5.jpg", year: "2022" },
+    { id: 1, title: "Contenido 1", image: "/assets/images/adaptive-icon.png", year: "2024" },
+    { id: 2, title: "Contenido 2", image: "/assets/images/adaptive-icon.png", year: "2024" },
+    { id: 3, title: "Contenido 3", image: "/assets/images/adaptive-icon.png", year: "2023" },
+    { id: 4, title: "Contenido 4", image: "/assets/images/adaptive-icon.png", year: "2023" },
+    { id: 5, title: "Contenido 5", image: "/assets/images/adaptive-icon.png", year: "2022" },
   ];
   
   const displayItems = items.length > 0 ? items : defaultItems;

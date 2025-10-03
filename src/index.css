@@ -1,5 +1,4 @@
-/* Importar fuentes personalizadas */
-@import './styles/fonts.css';
+/* Importar fuentes personalizadas desde public/index.html */
 
 body {
   margin: 0;
