@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import theme from '../../styles/theme';
+import { getBannersByNames } from '../../data/contentData';
 
 const BannerContainer = styled.section`
   position: relative;
@@ -158,32 +159,38 @@ function HeroBanner({ banners = [] }) {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Banners de ejemplo si no se proporcionan
-  const defaultBanners = [
-    {
-      id: 1,
-      title: "Bienvenido a JOJO-FLIX",
-      description: "Disfruta de miles de películas y series en alta calidad. Tu plataforma de streaming favorita ahora disponible en Windows.",
-      image: "/assets/images/bocchi_the_Rock_Banner.jpg",
-      action: "Explorar Catálogo"
-    },
-    {
-      id: 2,
-      title: "Últimos Estrenos",
-      description: "Descubre las películas y series más recientes. Contenido actualizado semanalmente para que nunca te quedes sin opciones.",
-      image: "/assets/images/beck_bg.jpg",
-      action: "Ver Estrenos"
-    },
-    {
-      id: 3,
-      title: "Series Populares",
-      description: "Las series más vistas por nuestra comunidad. Encuentra tu próxima obsesión televisiva aquí.",
-      image: "/assets/images/Berserkbanner.jpg",
-      action: "Ver Series"
-    }
+  // Edita aquí los nombres de las pelis/series que quieres mostrar en el hero (máx 5)
+  const heroNames = [
+    "Beck: Mongolian Chop Squad",
+    "Jojos Bizarre Adventure",
+    "Monster",
+    "Aqui no hay quien viva",
+    "Old Boy"
   ];
+  
+  const foundBanners = getBannersByNames(heroNames);
+  console.log('🔍 heroNames:', heroNames);
+  console.log('✅ foundBanners:', foundBanners.length, 'encontrados');
+  console.log('📋 Nombres encontrados:', foundBanners.map(b => b.nombre));
+  
+  const customBanners = foundBanners.map(item => ({
+    id: item.id,
+    title: item.nombre,
+    description: item.descripcion,
+    image: item.fondo,
+    logo: item.logo,
+    action: "Ver Ahora"
+  }));
 
-  const displayBanners = banners.length > 0 ? banners : defaultBanners;
+  // Si banners prop está vacío, usa los customBanners
+  const displayBanners = banners.length > 0 ? banners : customBanners;
+  
+  if (displayBanners.length === 0) {
+    return <div style={{padding: '40px', textAlign: 'center', color: 'white'}}>
+      ⚠️ No se encontraron banners. Verifica los nombres en heroNames.
+    </div>;
+  }
+  
   const current = displayBanners[currentBanner];
 
   // Auto-rotate banners
@@ -225,7 +232,23 @@ function HeroBanner({ banners = [] }) {
       <BannerOverlay />
       
       <BannerContent>
-        <BannerTitle>{current.title}</BannerTitle>
+        {current.logo ? (
+          <img 
+            src={current.logo} 
+            alt={current.title}
+            style={{
+              maxWidth: '400px',
+              maxHeight: '150px',
+              marginBottom: '20px',
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.8))'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        ) : (
+          <BannerTitle>{current.title}</BannerTitle>
+        )}
         <BannerDescription>{current.description}</BannerDescription>
         
         <BannerActions>
